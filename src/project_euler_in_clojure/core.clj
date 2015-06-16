@@ -1,7 +1,21 @@
 (ns project-euler-in-clojure.core
+  (use project-euler-in-clojure.problem-1)
+  (:require [clojure.tools.cli :refer [parse-opts]])
   (:gen-class))
 
-(defn -main
-  "I don't do a whole lot ... yet."
-  [& args]
-  (println "Hello, World!"))
+(def cli-options
+  [["-q" "--question QUESTION" "Project euler questions"
+    :default 0
+    :parse-fn #(Integer/parseInt %)]])
+
+(defn -main [& args]
+  (def euler-problems
+    [{:name "Multiples of 3 and 5", :function (problem1)}])
+
+  (def requested-question
+    (get-in (parse-opts args cli-options) [:options :question]))
+
+  (when (< requested-question (count euler-problems))
+    (let [name-func (nth euler-problems requested-question)]
+      (println (eval (get name-func :name)))
+      (println (eval (get name-func :function))))))
